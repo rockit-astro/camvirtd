@@ -1,0 +1,12 @@
+{
+  "daemon": "clasp_camvirt_1",
+  "log_name": "camvirtd@clasp",
+  "control_machines": ["CLASPTCS", "CLASPDAS"],
+  "initialize_timeout": 60,
+  "shutdown_timeout": 30,
+  "domains": {
+    "cam1": {
+      "cam1": "clasp_camera_1"
+    }
+  }
+}

@@ -1,0 +1,139 @@
+#!/usr/bin/env python3
+#
+# This file is part of the Robotic Observatory Control Kit (rockit)
+#
+# rockit is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# rockit is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with rockit.  If not, see <http://www.gnu.org/licenses/>.
+
+"""Camera virtual machine management daemon"""
+
+# pylint: disable=broad-except
+
+import argparse
+import threading
+import time
+import libvirt
+import Pyro4
+from astropy.time import Time
+import astropy.units as u
+from rockit.common import TryLock
+from rockit.common.helpers import pyro_client_matches
+from rockit.camvirt import CommandStatus, Config
+
+
+class CameraVirtualMachineDaemon:
+    def __init__(self, config):
+        self._config = config
+        self._command_lock = threading.Lock()
+        self._connection = libvirt.open("qemu:///system")
+        self._domains = {domain_id: self._connection.lookupByName(domain_id) for domain_id in config.domains}
+
+    @Pyro4.expose
+    def report_camera_status(self, camera_id):
+        """Query the latest status for a camera, returning a dummy DISABLED status if the VM is offline."""
+        info = self._config.cameras.get(camera_id, None)
+        if self._command_lock.locked() or self._domains[info['domain']].state()[0] != libvirt.VIR_DOMAIN_RUNNING:
+            return {
+                'state': 0,
+                'vm_active': False
+            }
+
+        with info['daemon'].connect() as cam:
+            status = cam.report_status()
+            status['vm_active'] = True
+            return status
+
+    @Pyro4.expose
+    def initialize(self):
+        """Power on managed VMs and wait for the camera daemon to respond (or times out)."""
+        if not pyro_client_matches(self._config.control_ips):
+            return CommandStatus.InvalidControlIP
+
+        with TryLock(self._command_lock) as success:
+            if not success:
+                return CommandStatus.Blocked
+
+            for domain_id, domain in self._domains.items():
+                domain_state = domain.state()[0]
+                if domain_state != libvirt.VIR_DOMAIN_RUNNING:
+                    domain.create()
+
+            domain_initialized = {domain_id: False for domain_id in self._domains}
+            start_time = Time.now()
+            while True:
+                if all(domain_initialized.values()):
+                    return CommandStatus.Succeeded
+
+                domain_checked = {domain_id: False for domain_id in self._domains}
+                for info in self._config.cameras.values():
+                    if domain_checked[info['domain']] or domain_initialized[info['domain']]:
+                        continue
+                    try:
+                        domain_checked[info['domain']] = True
+                        with info['daemon'].connect(timeout=1) as cam:
+                            cam.report_status()
+                            domain_initialized[info['domain']] = True
+                    except:
+                        pass
+
+                if (Time.now() - start_time) > self._config.initialize_timeout * u.s:
+                    return CommandStatus.Failed
+
+                time.sleep(1)
+
+    @Pyro4.expose
+    def shutdown(self):
+        """Shut down managed VMs and wait for them to power off."""
+        if not pyro_client_matches(self._config.control_ips):
+            return CommandStatus.InvalidControlIP
+
+        with TryLock(self._command_lock) as success:
+            if not success:
+                return CommandStatus.Blocked
+
+            domain_shutoff = {domain_id: False for domain_id in self._domains}
+
+            start_time = Time.now()
+            while True:
+                if all(domain_shutoff.values()):
+                    return CommandStatus.Succeeded
+
+                for domain_id, domain in self._domains.items():
+                    if domain_shutoff[domain_id]:
+                        continue
+
+                    domain_state = domain.state()[0]
+                    if domain_state == libvirt.VIR_DOMAIN_SHUTOFF:
+                        domain_shutoff[domain_id] = True
+
+                    # Note: sometimes it takes multiple requests before a VM will start shutting down
+                    elif domain_state != libvirt.VIR_DOMAIN_SHUTDOWN:
+                        try:
+                            domain.shutdownFlags(
+                                libvirt.VIR_DOMAIN_SHUTDOWN_GUEST_AGENT | libvirt.VIR_DOMAIN_SHUTDOWN_ACPI_POWER_BTN)
+                        except:
+                            pass
+
+                if (Time.now() - start_time) > self._config.shutdown_timeout * u.s:
+                    return CommandStatus.Failed
+
+                time.sleep(1)
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='Camera virtual machine manager daemon')
+    parser.add_argument('config', help='Path to configuration json file')
+    args = parser.parse_args()
+
+    _config = Config(args.config)
+    _config.daemon.launch(CameraVirtualMachineDaemon(_config))
