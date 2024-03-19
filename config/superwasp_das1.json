@@ -2,7 +2,7 @@
   "daemon": "superwasp_camvirt_das1",
   "log_name": "camvirtd@superwasp_das1",
   "control_machines": ["SWASPTCS", "SWASPDAS1", "SWASPDAS2"],
-  "initialize_timeout": 60,
+  "initialize_timeout": 90,
   "shutdown_timeout": 30,
   "domains": {
     "cam1": {
