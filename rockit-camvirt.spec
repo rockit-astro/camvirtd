@@ -21,6 +21,7 @@ mkdir -p %{buildroot}%{_sysconfdir}/camvirtd/
 %{__install} %{_sourcedir}/completion/camvirt %{buildroot}/etc/bash_completion.d/camvirt
 
 %{__install} %{_sourcedir}/config/clasp_das.json %{buildroot}%{_sysconfdir}/camvirtd
+%{__install} %{_sourcedir}/config/clasp_tcs.json %{buildroot}%{_sysconfdir}/camvirtd
 %{__install} %{_sourcedir}/config/superwasp_das1.json %{buildroot}%{_sysconfdir}/camvirtd
 %{__install} %{_sourcedir}/config/superwasp_das2.json %{buildroot}%{_sysconfdir}/camvirtd
 
@@ -57,6 +58,7 @@ Group:   Unspecified
 %files data-clasp
 %defattr(0644,root,root,-)
 %{_sysconfdir}/camvirtd/clasp_das.json
+%{_sysconfdir}/camvirtd/clasp_tcs.json
 
 %package data-superwasp
 Summary: Camera VM configuration for the SuperWASP telescope.

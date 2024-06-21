@@ -14,7 +14,7 @@ The configuration options are:
 {
   "daemon": "superwasp_camvirt_das1", # Run the server as this daemon. Daemon types are registered in `rockit.common.daemons`.
   "log_name": "camvirtd@superwasp_das1", # The name to use when writing messages to the observatory log.
-  "control_machines": ["SWASPTCS","SWASPDAS1", "SWASPDAS2"], # Machine names that are allowed to control (rather than just query) state. Machine names are registered in `rockit.common.IP`.
+  "control_machines": ["SWASPTCS", "SWASPDAS1", "SWASPDAS2"], # Machine names that are allowed to control (rather than just query) state. Machine names are registered in `rockit.common.IP`.
   "initialize_timeout": 60, # The maximum timeout between starting a VM and camd becoming active.
   "shutdown_timeout": 60, # The maximum timeout between stopping a VM and it powering off
   "domains": {
@@ -33,13 +33,13 @@ The configuration options are:
 
 The automated packaging scripts will push 5 RPM packages to the observatory package repository:
 
-| Package                       | Description                                                                       |
-|-------------------------------|-----------------------------------------------------------------------------------|
-| rockit-camvirt-server         | Contains the `camvirtd` server and systemd service file.                          |
-| rockit-camvirt-client         | Contains the `camvirt` commandline utility.                                       |
-| rockit-camvirt-data-clasp     | Contains the json configuration for the CLASP CMOS camera.                        |
-| rockit-camvirt-data-superwasp | Contains the json configuration for the SuperWASP cameras.                        |
-| python3-rockit-camvirt        | Contains the python module with shared code.                                      |
+| Package                       | Description                                                |
+|-------------------------------|------------------------------------------------------------|
+| rockit-camvirt-server         | Contains the `camvirtd` server and systemd service file.   |
+| rockit-camvirt-client         | Contains the `camvirt` commandline utility.                |
+| rockit-camvirt-data-clasp     | Contains the json configuration for the CLASP cameras.     |
+| rockit-camvirt-data-superwasp | Contains the json configuration for the SuperWASP cameras. |
+| python3-rockit-camvirt        | Contains the python module with shared code.               |
 
 After installing packages, the main systemd service should be enabled:
 
