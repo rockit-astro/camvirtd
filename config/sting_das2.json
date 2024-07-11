@@ -1,0 +1,15 @@
+{
+  "daemon": "sting_camvirt_das2",
+  "log_name": "camvirtd@sting_das2",
+  "control_machines": ["STINGTCS", "STINGDAS1", "STINGDAS2"],
+  "initialize_timeout": 90,
+  "shutdown_timeout": 30,
+  "domains": {
+    "cam3": {
+      "cam3": "sting_cam3"
+    },
+    "cam4": {
+      "cam4": "sting_cam4"
+    }
+  }
+}

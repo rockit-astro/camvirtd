@@ -22,8 +22,8 @@ mkdir -p %{buildroot}%{_sysconfdir}/camvirtd/
 
 %{__install} %{_sourcedir}/config/clasp_das.json %{buildroot}%{_sysconfdir}/camvirtd
 %{__install} %{_sourcedir}/config/clasp_tcs.json %{buildroot}%{_sysconfdir}/camvirtd
-%{__install} %{_sourcedir}/config/superwasp_das1.json %{buildroot}%{_sysconfdir}/camvirtd
-%{__install} %{_sourcedir}/config/superwasp_das2.json %{buildroot}%{_sysconfdir}/camvirtd
+%{__install} %{_sourcedir}/config/sting_das1.json %{buildroot}%{_sysconfdir}/camvirtd
+%{__install} %{_sourcedir}/config/sting_das2.json %{buildroot}%{_sysconfdir}/camvirtd
 
 %package server
 Summary:  Camera VM management server
@@ -60,14 +60,14 @@ Group:   Unspecified
 %{_sysconfdir}/camvirtd/clasp_das.json
 %{_sysconfdir}/camvirtd/clasp_tcs.json
 
-%package data-superwasp
-Summary: Camera VM configuration for the SuperWASP telescope.
+%package data-sting
+Summary: Camera VM configuration for the STING telescope.
 Group:   Unspecified
-%description data-superwasp
+%description data-sting
 
-%files data-superwasp
+%files data-sting
 %defattr(0644,root,root,-)
-%{_sysconfdir}/camvirtd/superwasp_das1.json
-%{_sysconfdir}/camvirtd/superwasp_das2.json
+%{_sysconfdir}/camvirtd/sting_das1.json
+%{_sysconfdir}/camvirtd/sting_das2.json
 
 %changelog
