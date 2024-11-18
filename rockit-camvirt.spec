@@ -20,8 +20,8 @@ mkdir -p %{buildroot}%{_sysconfdir}/camvirtd/
 %{__install} %{_sourcedir}/camvirt %{buildroot}%{_bindir}
 %{__install} %{_sourcedir}/completion/camvirt %{buildroot}/etc/bash_completion.d/camvirt
 
-%{__install} %{_sourcedir}/config/clasp_das.json %{buildroot}%{_sysconfdir}/camvirtd
-%{__install} %{_sourcedir}/config/clasp_tcs.json %{buildroot}%{_sysconfdir}/camvirtd
+%{__install} %{_sourcedir}/config/clasp_cmos.json %{buildroot}%{_sysconfdir}/camvirtd
+%{__install} %{_sourcedir}/config/clasp_swir.json %{buildroot}%{_sysconfdir}/camvirtd
 %{__install} %{_sourcedir}/config/sting_das1.json %{buildroot}%{_sysconfdir}/camvirtd
 %{__install} %{_sourcedir}/config/sting_das2.json %{buildroot}%{_sysconfdir}/camvirtd
 
@@ -57,8 +57,8 @@ Group:   Unspecified
 
 %files data-clasp
 %defattr(0644,root,root,-)
-%{_sysconfdir}/camvirtd/clasp_das.json
-%{_sysconfdir}/camvirtd/clasp_tcs.json
+%{_sysconfdir}/camvirtd/clasp_cmos.json
+%{_sysconfdir}/camvirtd/clasp_swir.json
 
 %package data-sting
 Summary: Camera VM configuration for the STING telescope.

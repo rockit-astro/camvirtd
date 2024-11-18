@@ -1,0 +1,12 @@
+{
+  "daemon": "clasp_camvirt_swir",
+  "log_name": "camvirtd@clasp-swir",
+  "control_machines": ["CLASPTCS", "CLASPCMOS", "CLASPSWIR"],
+  "initialize_timeout": 90,
+  "shutdown_timeout": 30,
+  "domains": {
+    "swir": {
+      "swir": "clasp_camera_swir"
+    }
+  }
+}
