@@ -1,6 +1,6 @@
 Name:      rockit-camvirt
 Version:   %{_version}
-Release:   1
+Release:   1%{dist}
 Summary:   Data pipeline
 Url:       https://github.com/rockit-astro/camvirtd
 License:   GPL-3.0
